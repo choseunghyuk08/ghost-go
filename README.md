@@ -64,27 +64,27 @@ npx wrangler pages deploy dist
 
 ## 🎨 유령 이미지 넣기
 
-마누스가 만든 SVG 20개를 **`public/ghosts/` 에 넣기만 하면 끝.** 코드 수정 불필요.
+이미지 20개를 **`public/ghosts/` 에 넣기만 하면 끝.** 코드 수정 불필요.
 
-```bash
-public/ghosts/ribbon.svg   # 1. 복도령
-public/ghosts/box.svg      # 2. 사물함귀신
-...                        # 파일명 목록은 public/ghosts/README.md
-```
+형식은 **webp(권장) / png / svg** 셋 다 되고, 코드가 `svg → webp → png` 순으로 찾는다.
 
-| 상황 | 동작 |
+| 항목 | 기준 |
 |---|---|
-| 파일 있음 | 그 이미지를 쓴다 |
-| 파일 없음 | 코드에 내장된 임시 SVG 를 쓴다 |
-| 일부만 있음 | 있는 것만 교체, 나머지는 임시 그림 |
+| 배경 | **투명 필수** |
+| 해상도 | 512×512 이상 |
+| 20종 합계 | 1.5 MB 이하 |
 
-넣은 뒤 검수:
+> 초기 설계는 Firebase Hosting(360MB/일) 기준이라 SVG 를 강제했으나,
+> Cloudflare Pages 는 대역폭 무제한이라 그 제약은 사라졌다.
+> 지금 기준은 학교 와이파이에서의 로딩 속도뿐이다.
+
+파일명 목록은 [public/ghosts/README.md](public/ghosts/README.md) 참고. 넣은 뒤:
 
 ```bash
 npm run check:assets
 ```
 
-파일명·용량(8KB)·viewBox·투명배경·비트맵 삽입 여부를 자동 점검한다.
+파일명 · 투명배경 · 해상도 · 용량을 점검한다.
 **파일명이 하나만 틀려도 그 유령만 조용히 임시 그림으로 나오므로 반드시 돌릴 것.**
 
 ---

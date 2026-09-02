@@ -5,21 +5,23 @@ import type { GhostShape, Rarity, Attribute } from '../types'
  * 유령 스프라이트
  *
  * ┌─ 2단 구조 ───────────────────────────────────────────────────────────┐
- * │ 1순위: public/ghosts/{shape}.svg   ← 마누스가 만든 최종 일러스트       │
- * │ 2순위: 아래 BODIES 의 인라인 SVG   ← 파일이 없을 때 쓰는 임시 그림     │
+ * │ 1순위: public/ghosts/{shape}.{svg|webp|png}  ← 최종 일러스트          │
+ * │ 2순위: 아래 BODIES 의 인라인 SVG              ← 파일 없을 때 임시 그림 │
  * └──────────────────────────────────────────────────────────────────────┘
  *
  * 파일을 public/ghosts/ 에 넣기만 하면 코드 수정 없이 즉시 교체된다.
  * 20개 중 일부만 넣어도 된다 — 없는 것만 임시 그림으로 나온다.
+ * 확장자는 svg → webp → png 순서로 찾는다 (셋 다 허용).
+ *
+ * 래스터(webp/png)를 허용하는 이유:
+ *   초기 설계는 Firebase Hosting(360MB/일) 기준이라 SVG 를 강제했지만,
+ *   Cloudflare Pages 는 대역폭이 무제한이라 그 제약이 사라졌다.
+ *   남은 기준은 '학교 와이파이에서의 로딩 속도'뿐이므로
+ *   20종 합계 1~1.5MB 정도면 충분하다.
  *
  * 파일명은 반드시 src/data/ghosts.ts 의 `shape` 값과 같아야 한다.
  * (ribbon, box, board, tray, drop, rod, leaf, paper, stair, flask,
  *  note, ball, hydrant, bundle, book, mirror, mic, bust, clock, door)
- *
- * 공통 규칙:
- *  - 모든 유령은 하반신이 안개로 흩어진다
- *  - 눈은 단순한 두 점 (귀엽고 살짝 무섭게)
- *  - 34px 로 줄여도 형태가 구분되어야 한다
  */
 
 const ATTR_COLOR: Record<Attribute, string> = {
@@ -41,13 +43,17 @@ const RARITY_AURA: Record<Rarity, string> = {
   MYTHIC: '#ff3d81',
 }
 
-/**
- * 파일이 없는 것으로 확인된 shape 를 기억한다.
- * 도감 화면에서 20종을 한 번에 그리므로, 매번 404 를 내지 않도록 세션 내에서 캐시한다.
- */
-const missingArt = new Set<string>()
+/** 찾아볼 확장자 순서 */
+export const ART_EXTS = ['svg', 'webp', 'png'] as const
 
-export const ghostArtUrl = (shape: GhostShape) => `/ghosts/${shape}.svg`
+export const ghostArtUrl = (shape: GhostShape, ext: string) => `/ghosts/${shape}.${ext}`
+
+/**
+ * shape 별로 '어느 확장자가 실제로 존재했는지' 를 기억한다.
+ * 도감은 20종을 한 번에 그리므로, 매번 404 를 반복하지 않도록 세션 내 캐시.
+ *   숫자 = ART_EXTS 인덱스,  -1 = 파일 없음(임시 그림 사용)
+ */
+const artExtCache = new Map<string, number>()
 
 /* ------------------------------------------------------------------------ */
 /* 임시 스프라이트 (파일이 없을 때)                                            */
@@ -374,12 +380,13 @@ export function GhostSprite({
   className = '',
   silhouette = false,
 }: GhostSpriteProps) {
-  // 파일이 없다고 이미 확인된 shape 는 처음부터 임시 그림으로 간다
-  const [useArt, setUseArt] = useState(() => !missingArt.has(shape))
+  // 이미 확인된 확장자가 있으면 거기서 시작한다 (404 반복 방지)
+  const [extIdx, setExtIdx] = useState(() => artExtCache.get(shape) ?? 0)
 
   const Body = BODIES[shape] ?? BODIES.ribbon
   const color = ATTR_COLOR[attribute] ?? '#c3aede'
   const auraColor = RARITY_AURA[rarity]
+  const useArt = extIdx >= 0 && extIdx < ART_EXTS.length
 
   return (
     <div
@@ -395,23 +402,27 @@ export function GhostSprite({
       )}
 
       {useArt ? (
-        // 마누스 최종 일러스트
+        // 최종 일러스트 (svg / webp / png)
         <img
-          src={ghostArtUrl(shape)}
+          src={ghostArtUrl(shape, ART_EXTS[extIdx])}
           width={size}
           height={size * 1.2}
           alt=""
           draggable={false}
+          decoding="async"
           className="relative block h-full w-full object-contain"
           style={{
             filter: silhouette
               ? 'brightness(0) saturate(0) opacity(0.55)'
               : `drop-shadow(0 4px 12px ${auraColor}55)`,
           }}
+          onLoad={() => artExtCache.set(shape, extIdx)}
           onError={() => {
-            // 파일이 없다 → 이번 세션 동안 다시 시도하지 않는다
-            missingArt.add(shape)
-            setUseArt(false)
+            // 다음 확장자를 시도하고, 전부 없으면 임시 그림으로 내려간다
+            const next = extIdx + 1
+            const resolved = next < ART_EXTS.length ? next : -1
+            artExtCache.set(shape, resolved)
+            setExtIdx(resolved)
           }}
         />
       ) : (

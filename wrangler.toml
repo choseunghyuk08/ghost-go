@@ -16,4 +16,4 @@ pages_build_output_dir = "dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "ghost-go-db"
-database_id = "PLACEHOLDER_DB_ID"   # ← wrangler d1 create 출력값으로 교체
+database_id = "31c000c3-d1ae-4c95-96e6-79d7a09bafa7"

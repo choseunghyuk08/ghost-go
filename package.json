@@ -18,7 +18,8 @@
     "manus:short": "node --experimental-strip-types scripts/manus-short.ts",
     "qr": "node scripts/make-qr.mjs https://ghost-go.pages.dev",
     "deploy": "npm run build && wrangler pages deploy dist --project-name ghost-go --branch main",
-    "test:prize": "node scripts/test-prize.mjs"
+    "test:prize": "node scripts/test-prize.mjs",
+    "test:after-claim": "node scripts/test-after-claim.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

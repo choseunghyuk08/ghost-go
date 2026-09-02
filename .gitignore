@@ -33,3 +33,6 @@ seed.log
 
 # Cloudflare 배포 설정
 .dev.vars
+
+# QR 생성물 (실제 행사용 슬러그가 들어가므로 커밋 금지)
+qr-out/

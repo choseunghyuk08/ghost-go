@@ -62,6 +62,46 @@ npx wrangler pages deploy dist
 
 ---
 
+## 🎨 유령 이미지 넣기
+
+마누스가 만든 SVG 20개를 **`public/ghosts/` 에 넣기만 하면 끝.** 코드 수정 불필요.
+
+```bash
+public/ghosts/ribbon.svg   # 1. 복도령
+public/ghosts/box.svg      # 2. 사물함귀신
+...                        # 파일명 목록은 public/ghosts/README.md
+```
+
+| 상황 | 동작 |
+|---|---|
+| 파일 있음 | 그 이미지를 쓴다 |
+| 파일 없음 | 코드에 내장된 임시 SVG 를 쓴다 |
+| 일부만 있음 | 있는 것만 교체, 나머지는 임시 그림 |
+
+넣은 뒤 검수:
+
+```bash
+npm run check:assets
+```
+
+파일명·용량(8KB)·viewBox·투명배경·비트맵 삽입 여부를 자동 점검한다.
+**파일명이 하나만 틀려도 그 유령만 조용히 임시 그림으로 나오므로 반드시 돌릴 것.**
+
+---
+
+## 테스트
+
+```bash
+npm run typecheck     # 타입 검사 (클라이언트 + 서버 + 빌드설정)
+npx oxlint            # 린트
+npm run test:smoke    # 서버 게임 로직 회귀 검사 (dev 서버 실행 중이어야 함)
+```
+
+`test:smoke` 는 실제 HTTP 요청으로 22가지를 검사한다 —
+멱등성, 중복 보상 차단, 어뷰즈 방지, 도감 스포일러 차단, 토큰 위조 거부, 닉네임 규칙.
+
+---
+
 ## 배포
 
 ```bash

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Btn, Screen, Spinner } from './components/ui'
 import { TabBar } from './components/TabBar'
@@ -46,7 +46,14 @@ function Shell() {
 function DirectSlug() {
   const loc = useLocation()
   const slug = parseSlug(decodeURIComponent(loc.pathname.split('/').pop() ?? ''))
-  return slug ? <Navigate to="/reveal" state={{ slug }} replace /> : <Navigate to="/scan" replace />
+  // 렌더마다 새 키가 생기지 않도록 최초 1회만 만든다
+  const idemRef = useRef<string | null>(null)
+  if (idemRef.current === null) idemRef.current = crypto.randomUUID()
+  return slug ? (
+    <Navigate to="/reveal" state={{ slug, idem: idemRef.current }} replace />
+  ) : (
+    <Navigate to="/scan" replace />
+  )
 }
 
 function Boot() {

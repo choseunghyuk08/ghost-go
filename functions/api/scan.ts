@@ -263,7 +263,10 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const levelBefore = player.level
   const levelAfter = levelFromXp(newXp)
   const newUnique = player.unique_ghosts + (isNew ? 1 : 0)
-  const newCatches = player.total_catches + 1
+  // 보상이 거부된 스캔은 포획 수에 넣지 않는다.
+  // total_catches 는 랭킹 3순위 정렬 기준(사양 §39)이라, 같은 QR 을 계속 찍어
+  // 순위를 올리는 어뷰즈가 가능해진다. 원장(scan_logs)에는 그대로 남는다.
+  const newCatches = player.total_catches + (rewarded || isNew ? 1 : 0)
 
   const statements: D1PreparedStatement[] = [
     db

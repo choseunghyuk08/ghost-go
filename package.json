@@ -11,7 +11,10 @@
     "typecheck": "tsc -b",
     "db:seed": "node --experimental-strip-types scripts/seed.ts > seed.sql",
     "db:init": "wrangler d1 execute ghost-go-db --local --file=migrations/0001_init.sql && wrangler d1 execute ghost-go-db --local --file=seed.sql",
-    "db:init:remote": "wrangler d1 execute ghost-go-db --remote --file=migrations/0001_init.sql && wrangler d1 execute ghost-go-db --remote --file=seed.sql"
+    "db:init:remote": "wrangler d1 execute ghost-go-db --remote --file=migrations/0001_init.sql && wrangler d1 execute ghost-go-db --remote --file=seed.sql",
+    "check:assets": "node --experimental-strip-types scripts/check-assets.ts",
+    "manus:prompt": "node --experimental-strip-types scripts/manus-prompt.ts",
+    "test:smoke": "node scripts/smoke-test.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

@@ -24,14 +24,15 @@ const T = { presence: 600, emerge: 1700, banner: 2700, reward: 3400, card: 4200 
 export function Reveal() {
   const nav = useNavigate()
   const loc = useLocation()
-  const slug = (loc.state as { slug?: string } | null)?.slug
+  const navState = loc.state as { slug?: string; idem?: string } | null
+  const slug = navState?.slug
+  const idem = navState?.idem
   const applyScan = useGame((s) => s.applyScan)
 
   const [step, setStep] = useState<Step>('blackout')
   const [result, setResult] = useState<ScanSuccess | null>(null)
   const [error, setError] = useState<ApiError | null>(null)
   const timers = useRef<number[]>([])
-  const startedAt = useRef(Date.now())
 
   // 슬러그 없이 직접 들어온 경우
   useEffect(() => {
@@ -42,9 +43,11 @@ export function Reveal() {
   useEffect(() => {
     if (!slug) return
     let cancelled = false
+    // 연출 시작 시각. effect 안에서 잡아야 렌더가 순수하게 유지된다.
+    const startedAt = Date.now()
 
     ;(async () => {
-      const res = await scan(slug)
+      const res = await scan(slug, idem)
       if (cancelled) return
 
       if (isError(res)) {
@@ -57,7 +60,7 @@ export function Reveal() {
       applyScan(res)
 
       // 이미 지난 시간을 빼서 총 길이를 4.2초로 유지한다
-      const elapsed = Date.now() - startedAt.current
+      const elapsed = Date.now() - startedAt
       const at = (t: number) => Math.max(0, t - elapsed)
       const push = (fn: () => void, delay: number) => {
         timers.current.push(window.setTimeout(fn, delay))
@@ -81,7 +84,7 @@ export function Reveal() {
       timers.current.forEach(window.clearTimeout)
       timers.current = []
     }
-  }, [slug, applyScan])
+  }, [slug, idem, applyScan])
 
   /** 연출 건너뛰기 */
   function skip() {

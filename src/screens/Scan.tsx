@@ -49,7 +49,10 @@ export function Scan() {
       doneRef.current = true
       if ('vibrate' in navigator) navigator.vibrate?.([18, 40, 90])
       stop()
-      nav('/reveal', { state: { slug } })
+      // 멱등키를 '스캔한 순간' 한 번만 만든다.
+      // Reveal 이 다시 마운트되어도(StrictMode 이중 실행, 뒤로가기 등)
+      // 같은 키가 서버로 가므로 보상이 두 번 지급되지 않는다.
+      nav('/reveal', { state: { slug, idem: crypto.randomUUID() } })
     },
     [nav, stop],
   )

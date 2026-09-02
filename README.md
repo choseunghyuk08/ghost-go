@@ -4,6 +4,8 @@
 
 > "학교 곳곳에 숨어 있는 유령을 찾아 QR을 스캔하고, 나만의 유령 도감을 완성하라!"
 
+**▶ 배포됨: https://ghost-go.pages.dev**
+
 | 항목 | 값 |
 |---|---|
 | 행사 규모 | 3일 · 하루 약 100명 · 총 300명+ · 동시 접속 20명 내외 |
@@ -185,8 +187,34 @@ ghost-go/
 
 ## 진행 상황
 
+### 완료
 - [x] **PHASE 1** — 온보딩 · 홈 · QR 스캔 · 발견 연출 · 도감 · XP/레벨 · 당일 랭킹 · 프로필
+- [x] 유령 20종 이미지 적용 (`public/ghosts/*.webp`, 398 KB)
+- [x] QR 카드 생성기 (`npm run qr`) — 인쇄용 A4 + 화면 테스트용
+- [x] **Cloudflare 배포** — Pages + D1, 프로덕션 스모크 테스트 22/22 통과
+
+### 남음
+- [ ] **실기기 카메라 스캔 테스트** ← 다음 할 일
+- [ ] 유령 이미지 원본 교체 (지금은 미리보기 시트에서 추출, 시트1 10종에 옅은 후광)
 - [ ] **PHASE 2** — 미션 · 배지 · Ghost Coin 사용처
-- [ ] **PHASE 3** — 관리자 페이지 (유령 CRUD · QR 생성/인쇄 · 통계 · 이벤트 제어)
-- [ ] 유령 20종 최종 일러스트 교체 (현재는 코드로 그린 임시 SVG)
-- [ ] 실기기 카메라 테스트
+- [ ] **PHASE 3** — 관리자 페이지 (유령 CRUD · QR 관리 · 통계 · 이벤트 제어)
+- [ ] 행사 전 QR 슬러그 랜덤 재발급 + 인쇄
+
+---
+
+## 배포 현황
+
+| 항목 | 값 |
+|---|---|
+| 사이트 | https://ghost-go.pages.dev |
+| Pages 프로젝트 | `ghost-go` (production branch: `main`) |
+| D1 | `ghost-go-db` |
+| 시크릿 | `TOKEN_SECRET` 등록됨 |
+| 데이터 | 유령 20 · 코드 20 · 완주 XP 7,300 · 이벤트 `running` |
+
+재배포:
+
+```bash
+npm run build
+npx wrangler pages deploy dist --project-name ghost-go --branch main
+```

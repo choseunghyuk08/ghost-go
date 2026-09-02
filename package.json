@@ -15,7 +15,9 @@
     "check:assets": "node --experimental-strip-types scripts/check-assets.ts",
     "manus:prompt": "node --experimental-strip-types scripts/manus-prompt.ts",
     "test:smoke": "node scripts/smoke-test.mjs",
-    "manus:short": "node --experimental-strip-types scripts/manus-short.ts"
+    "manus:short": "node --experimental-strip-types scripts/manus-short.ts",
+    "qr": "node scripts/make-qr.mjs https://ghost-go.pages.dev",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name ghost-go --branch main"
   },
   "dependencies": {
     "react": "^19.2.8",

@@ -11,6 +11,7 @@ import { Dex } from './screens/Dex'
 import { Ranking } from './screens/Ranking'
 import { Profile } from './screens/Profile'
 import { Prize } from './screens/Prize'
+import { Ops } from './screens/Ops'
 import { useGame } from './store/game'
 import { parseSlug } from './lib/qr'
 
@@ -99,11 +100,28 @@ function Boot() {
   return <Shell />
 }
 
+/**
+ * 운영 화면(/ops)은 플레이어 온보딩을 거치지 않는다.
+ * 스태프는 닉네임을 만들 필요가 없고, 서버가 쿠키로 권한을 판정한다.
+ */
+function Root() {
+  const loc = useLocation()
+  if (loc.pathname.toLowerCase().startsWith('/ops')) {
+    return (
+      <Routes>
+        <Route path="/ops" element={<Ops />} />
+        <Route path="/ops/*" element={<Navigate to="/ops" replace />} />
+      </Routes>
+    )
+  }
+  return <Boot />
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <div className="mx-auto max-w-md">
-        <Boot />
+        <Root />
       </div>
     </BrowserRouter>
   )

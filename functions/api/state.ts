@@ -19,6 +19,9 @@ interface PlayerRow {
   total_catches: number
   created_at: number
   is_blocked: number
+  prize_unlocked_at: number | null
+  prize_claimed_at: number | null
+  prize_code: string | null
 }
 
 interface DexRow {
@@ -105,6 +108,18 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     },
     dex,
     totalGhosts: dex.length,
+    prize: cfg.prize_enabled
+      ? {
+          enabled: true,
+          threshold: cfg.prize_threshold,
+          name: cfg.prize_name,
+          unlocked: Boolean(player.prize_unlocked_at),
+          claimed: Boolean(player.prize_claimed_at),
+          claimedAt: player.prize_claimed_at,
+          code: player.prize_code,
+          remaining: Math.max(0, cfg.prize_threshold - player.unique_ghosts),
+        }
+      : { enabled: false },
     event: {
       status: cfg.status,
       open: gate.open,

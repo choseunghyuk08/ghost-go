@@ -102,11 +102,26 @@ export interface EventState {
   rankingFrozen: boolean
 }
 
+export interface PrizeState {
+  enabled: boolean
+  threshold?: number
+  name?: string
+  unlocked?: boolean
+  claimed?: boolean
+  claimedAt?: number | null
+  code?: string | null
+  /** 상품까지 남은 유령 수 */
+  remaining?: number
+  /** 이번 스캔에서 막 달성했는가 (스캔 응답에만 있음) */
+  justUnlocked?: boolean
+}
+
 export interface StateResponse {
   ok: true
   player: ApiPlayer
   dex: DexEntry[]
   totalGhosts: number
+  prize: PrizeState
   event: EventState
 }
 
@@ -138,6 +153,7 @@ export interface ScanSuccess {
   rank: number
   rankBefore: number
   rankUp: boolean
+  prize: PrizeState
   duplicateLine?: string
 }
 
@@ -260,6 +276,23 @@ export function fetchState() {
 
 export function fetchRanking(sort = 'xp', scope: 'today' | 'all' = 'today') {
   return request<RankingResponse>(`/api/ranking?sort=${sort}&scope=${scope}`)
+}
+
+export interface PrizeClaimed {
+  ok: true
+  claimedAt: number
+  code: string | null
+  nickname: string
+  name: string
+  message: string
+}
+
+/** 스태프가 PIN 을 입력해 상품 수령을 확정한다 */
+export function claimPrize(pin: string) {
+  return request<PrizeClaimed>('/api/prize', {
+    method: 'POST',
+    body: JSON.stringify({ pin }),
+  })
 }
 
 /** 멱등키를 붙여 보낸다 — 네트워크 재시도로 보상이 두 번 지급되지 않도록 */

@@ -53,6 +53,15 @@ export function randomId(len = 16): string {
   return s
 }
 
+/** 교환권 번호 — 스태프가 눈으로 대조하기 쉽게 4자리 */
+export function generatePrizeCode(): string {
+  const b = new Uint8Array(4)
+  crypto.getRandomValues(b)
+  let s = ''
+  for (let i = 0; i < 4; i++) s += CROCKFORD[b[i] % 32]
+  return s
+}
+
 export function generateRecoveryCode(): string {
   const b = new Uint8Array(8)
   crypto.getRandomValues(b)
@@ -166,6 +175,11 @@ export interface EventRow {
   same_ghost_daily_limit: number
   ranking_frozen: number
   frozen_at: number | null
+  // 상품 지급
+  prize_enabled: number
+  prize_threshold: number
+  prize_name: string
+  staff_pin: string
 }
 
 const DEFAULT_EVENT: EventRow = {
@@ -181,6 +195,10 @@ const DEFAULT_EVENT: EventRow = {
   same_ghost_daily_limit: 0,
   ranking_frozen: 0,
   frozen_at: null,
+  prize_enabled: 1,
+  prize_threshold: 4,
+  prize_name: '음료수',
+  staff_pin: '0000',
 }
 
 export async function loadEventConfig(db: D1Database): Promise<EventRow> {

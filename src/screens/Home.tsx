@@ -14,6 +14,7 @@ export function Home() {
   const dex = useGame((s) => s.dex)
   const totalGhosts = useGame((s) => s.totalGhosts)
   const event = useGame((s) => s.event)
+  const prize = useGame((s) => s.prize)
 
   if (!player) return null
 
@@ -46,6 +47,39 @@ export function Home() {
           needed={player.levelProgress.needed}
         />
       </div>
+
+      {/* 상품 교환권 — 받을 게 있으면 가장 먼저 보이게 */}
+      {prize?.enabled && prize.unlocked && !prize.claimed && (
+        <button
+          onClick={() => nav('/prize')}
+          className="tap anim-glow mx-4 mt-3 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-pumpkin to-spirit-deep px-4 py-3 text-left active:scale-[0.98]"
+        >
+          <span className="text-2xl">🎁</span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-black text-void">
+              {prize.name} 교환권을 받았어요!
+            </span>
+            <span className="block text-[11px] text-void/75">
+              운영 부스에서 이 화면을 보여주세요 · {prize.code}
+            </span>
+          </span>
+          <span className="text-void">›</span>
+        </button>
+      )}
+
+      {/* 상품까지 남은 개수 */}
+      {prize?.enabled && !prize.unlocked && (prize.remaining ?? 0) > 0 && (
+        <button
+          onClick={() => nav('/prize')}
+          className="tap mx-4 mt-3 flex items-center gap-2 rounded-2xl border border-pumpkin/30 bg-pumpkin/5 px-4 py-2.5 text-left active:scale-[0.98]"
+        >
+          <span className="text-lg">🎁</span>
+          <span className="flex-1 text-[12px] text-pumpkin-soft">
+            <b className="text-pumpkin">{prize.remaining}마리</b> 더 모으면 {prize.name}!
+          </span>
+          <span className="text-pumpkin/60">›</span>
+        </button>
+      )}
 
       {/* 이벤트 종료/대기 안내 */}
       {event && !event.open && (

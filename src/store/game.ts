@@ -10,6 +10,7 @@ import {
   type DexEntry,
   type EventState,
   type ScanSuccess,
+  type PrizeState,
 } from '../lib/api'
 
 /**
@@ -27,6 +28,7 @@ interface GameState {
   dex: DexEntry[]
   totalGhosts: number
   event: EventState | null
+  prize: PrizeState | null
   recoveryCode: string | null
 
   /** 발견 연출로 넘길 직전 스캔 결과 */
@@ -47,6 +49,7 @@ export const useGame = create<GameState>((set, get) => ({
   dex: [],
   totalGhosts: 20,
   event: null,
+  prize: null,
   recoveryCode: null,
   lastScan: null,
 
@@ -70,6 +73,7 @@ export const useGame = create<GameState>((set, get) => ({
       player: res.player,
       dex: res.dex,
       totalGhosts: res.totalGhosts,
+      prize: res.prize,
       event: res.event,
     })
   },
@@ -90,6 +94,7 @@ export const useGame = create<GameState>((set, get) => ({
       player: res.player,
       dex: res.dex,
       totalGhosts: res.totalGhosts,
+      prize: res.prize,
       event: res.event,
     })
   },
@@ -124,6 +129,7 @@ export const useGame = create<GameState>((set, get) => ({
       player: null,
       dex: [],
       event: null,
+      prize: null,
       lastScan: null,
       recoveryCode: null,
     })

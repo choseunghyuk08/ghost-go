@@ -204,6 +204,21 @@ export function Reveal() {
               <p className="mt-2 text-xs text-muted italic">{result.duplicateLine}</p>
             )}
 
+            {/* 상품 교환권 달성 — 레벨업보다 위에, 가장 크게 */}
+            {result.prize?.justUnlocked && (
+              <div className="anim-pop mt-3 rounded-xl bg-gradient-to-r from-pumpkin to-mythic px-4 py-3 text-center">
+                <p className="text-lg font-black text-void">
+                  🎁 {result.prize.name} 획득!
+                </p>
+                <p className="mt-0.5 text-[11px] font-bold text-void/80">
+                  유령 {result.prize.threshold}마리 달성 · 교환권 {result.prize.code}
+                </p>
+                <p className="mt-1 text-[11px] text-void/70">
+                  운영 부스에서 받아 가세요
+                </p>
+              </div>
+            )}
+
             {result.leveledUp && (
               <div className="anim-pop mt-3 rounded-xl bg-gradient-to-r from-spirit-deep to-pumpkin px-4 py-2.5 text-center">
                 <p className="text-sm font-black text-ghost-white">
@@ -228,6 +243,11 @@ export function Reveal() {
             <Btn full size="lg" onClick={() => nav('/scan', { replace: true })}>
               👻 다음 유령 찾기
             </Btn>
+            {result.prize?.justUnlocked && (
+              <Btn variant="secondary" full onClick={() => nav('/prize', { replace: true })}>
+                🎁 교환권 보기
+              </Btn>
+            )}
             <div className="flex gap-2">
               <Btn variant="ghost" full onClick={() => nav('/dex', { replace: true })}>
                 도감 보기

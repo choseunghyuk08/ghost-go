@@ -10,6 +10,7 @@ import { Reveal } from './screens/Reveal'
 import { Dex } from './screens/Dex'
 import { Ranking } from './screens/Ranking'
 import { Profile } from './screens/Profile'
+import { Prize } from './screens/Prize'
 import { useGame } from './store/game'
 import { parseSlug } from './lib/qr'
 
@@ -29,6 +30,7 @@ function Shell() {
         <Route path="/dex" element={<Dex />} />
         <Route path="/ranking" element={<Ranking />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/prize" element={<Prize />} />
         {/* QR 을 카메라 앱으로 직접 찍어 들어온 경우: /S/GG1-XXXX */}
         <Route path="/s/:slug" element={<DirectSlug />} />
         <Route path="/S/:slug" element={<DirectSlug />} />

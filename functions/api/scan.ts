@@ -21,6 +21,7 @@ import {
   loadEventConfig,
   eventGate,
   kstDayStart,
+  generatePrizeCode,
 } from '../_lib/util'
 
 const SLUG_RE = /^GG1-[0-9A-HJKMNP-TV-Z]{10}$/
@@ -36,6 +37,9 @@ interface PlayerRow {
   created_at: number
   last_scan_at: number | null
   is_blocked: number
+  prize_unlocked_at: number | null
+  prize_claimed_at: number | null
+  prize_code: string | null
 }
 
 interface CodeRow {
@@ -268,15 +272,28 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   // 순위를 올리는 어뷰즈가 가능해진다. 원장(scan_logs)에는 그대로 남는다.
   const newCatches = player.total_catches + (rewarded || isNew ? 1 : 0)
 
+  /* 상품 교환권 발급 판정 (유령 N종 달성) --------------------------------- */
+  const prizeJustUnlocked =
+    cfg.prize_enabled === 1 &&
+    !player.prize_unlocked_at &&
+    newUnique >= cfg.prize_threshold
+  const prizeCode = prizeJustUnlocked ? generatePrizeCode() : player.prize_code
+
   const statements: D1PreparedStatement[] = [
     db
       .prepare(
         `UPDATE players SET xp = ?2, coins = coins + ?3, level = ?4,
                             unique_ghosts = ?5, total_catches = ?6,
-                            last_scan_at = ?7, last_active_at = ?7
+                            last_scan_at = ?7, last_active_at = ?7,
+                            prize_unlocked_at = COALESCE(prize_unlocked_at, ?8),
+                            prize_code = COALESCE(prize_code, ?9)
          WHERE id = ?1`,
       )
-      .bind(playerId, newXp, coinGain, levelAfter, newUnique, newCatches, now),
+      .bind(
+        playerId, newXp, coinGain, levelAfter, newUnique, newCatches, now,
+        prizeJustUnlocked ? now : null,
+        prizeJustUnlocked ? prizeCode : null,
+      ),
     db
       .prepare(
         `INSERT INTO discoveries (player_id, ghost_id, first_discovered_at, last_scanned_at, scan_count)
@@ -348,6 +365,18 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     rank,
     rankBefore,
     rankUp: rank < rankBefore,
+    prize: cfg.prize_enabled
+      ? {
+          enabled: true,
+          threshold: cfg.prize_threshold,
+          name: cfg.prize_name,
+          justUnlocked: prizeJustUnlocked,
+          unlocked: Boolean(prizeJustUnlocked || player.prize_unlocked_at),
+          claimed: Boolean(player.prize_claimed_at),
+          code: prizeCode,
+          remaining: Math.max(0, cfg.prize_threshold - newUnique),
+        }
+      : { enabled: false },
     duplicateLine: isNew ? undefined : DUP_LINES[Math.floor(now / 1000) % DUP_LINES.length],
   })
 }

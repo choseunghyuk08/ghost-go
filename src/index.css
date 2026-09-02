@@ -1,0 +1,248 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   고스트 GO 디자인 시스템
+   Halloween × Cute Horror × School Mystery
+   기획서 PART 2 §5 디자인 토큰 기준
+   ========================================================================== */
+
+@theme {
+  /* --- 배경 --- */
+  --color-void: #0b0614;
+  --color-night: #130a24;
+  --color-dusk: #1c1033;
+  --color-surface: #241542;
+
+  /* --- 강조 --- */
+  --color-pumpkin: #ff7a00;
+  --color-pumpkin-soft: #ffa04d;
+  --color-spirit: #9d4edd;
+  --color-spirit-deep: #7b2cbf;
+
+  /* --- 텍스트 --- */
+  --color-ghost-white: #f4f1fa;
+  --color-lilac: #c3aede;
+  --color-muted: #7c6a99;
+
+  /* --- 등급 --- */
+  --color-common: #9aa5b1;
+  --color-rare: #4cc9f0;
+  --color-epic: #9d4edd;
+  --color-legendary: #ff7a00;
+  --color-mythic: #ff3d81;
+
+  /* --- 타이포 --- */
+  --font-display: 'Jua', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+
+  /* --- 라운드 --- */
+  --radius-card: 20px;
+  --radius-btn: 16px;
+}
+
+/* ==========================================================================
+   전역
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+  /* 모바일 100vh 문제 대응 */
+  --app-h: 100dvh;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-void);
+  color: var(--color-ghost-white);
+  font-family: var(--font-sans);
+  /* 세로 스크롤만 허용, 가로 바운스 차단 */
+  overscroll-behavior-y: contain;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 숫자 정렬 (XP·코인 카운터) */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   애니메이션 — transform / opacity 만 사용 (레이아웃 유발 금지)
+   PART 2 §7 원칙
+   ========================================================================== */
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+}
+
+@keyframes fog-drift {
+  0% {
+    transform: translateX(-12%) scale(1.1);
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateX(12%) scale(1.1);
+    opacity: 0.35;
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  20% {
+    transform: translate3d(-6px, 2px, 0);
+  }
+  40% {
+    transform: translate3d(5px, -3px, 0);
+  }
+  60% {
+    transform: translate3d(-4px, 3px, 0);
+  }
+  80% {
+    transform: translate3d(3px, -2px, 0);
+  }
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes rise-fade {
+  0% {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes scan-sweep {
+  0% {
+    transform: translateY(-46%);
+  }
+  100% {
+    transform: translateY(46%);
+  }
+}
+
+.anim-float {
+  animation: float-y 4s ease-in-out infinite;
+}
+.anim-fog {
+  animation: fog-drift 18s ease-in-out infinite alternate;
+}
+.anim-glow {
+  animation: pulse-glow 2.6s ease-in-out infinite;
+}
+.anim-shake {
+  animation: shake 620ms ease-in-out;
+}
+.anim-flash {
+  animation: flash 520ms ease-out forwards;
+}
+.anim-rise {
+  animation: rise-fade 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.anim-pop {
+  animation: pop-in 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.anim-sweep {
+  animation: scan-sweep 2.2s ease-in-out infinite alternate;
+}
+
+/* 저사양 기기 / 접근성 대응 */
+@media (prefers-reduced-motion: reduce) {
+  .anim-float,
+  .anim-fog,
+  .anim-glow,
+  .anim-shake,
+  .anim-sweep {
+    animation: none !important;
+  }
+  .anim-rise,
+  .anim-pop,
+  .anim-flash {
+    animation-duration: 1ms !important;
+  }
+}
+
+/* ==========================================================================
+   공용 유틸
+   ========================================================================== */
+
+/* 반투명 다크 글래스 카드 */
+.glass {
+  background: color-mix(in srgb, var(--color-surface) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-spirit) 28%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+/* 최소 터치 영역 44px 보장 */
+.tap {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* iOS 노치 대응 */
+.safe-t {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-b {
+  padding-bottom: env(safe-area-inset-bottom);
+}

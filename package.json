@@ -1,0 +1,40 @@
+{
+  "name": "ghost-go",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "npm run build && wrangler pages dev",
+    "typecheck": "tsc -b",
+    "db:seed": "node --experimental-strip-types scripts/seed.ts > seed.sql",
+    "db:init": "wrangler d1 execute ghost-go-db --local --file=migrations/0001_init.sql && wrangler d1 execute ghost-go-db --local --file=seed.sql",
+    "db:init:remote": "wrangler d1 execute ghost-go-db --remote --file=migrations/0001_init.sql && wrangler d1 execute ghost-go-db --remote --file=seed.sql"
+  },
+  "dependencies": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.3",
+    "zustand": "^5.0.15",
+    "zxing-wasm": "^3.1.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260901.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.1.0",
+    "oxlint": "^1.79.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.2",
+    "wrangler": "^4.127.1"
+  },
+  "allowScripts": {
+    "workerd@1.20260828.1": true,
+    "esbuild@0.28.1": true
+  }
+}

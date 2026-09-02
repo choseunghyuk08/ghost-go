@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.functions.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["@cloudflare/workers-types"],
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  // Pages Functions 는 유령 마스터 데이터와 슬러그 규칙을 클라이언트와 공유한다.
+  // (데이터를 복제하지 않는다 — 축 간 불일치가 설계 검증에서 치명 이슈로 나왔다.)
+  "include": ["functions", "src/data/ghosts.ts", "src/lib/slug.ts", "src/types"]
+}

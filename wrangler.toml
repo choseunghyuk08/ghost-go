@@ -1,0 +1,19 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "ghost-go"
+compatibility_date = "2026-08-01"
+pages_build_output_dir = "dist"
+
+# ---------------------------------------------------------------------------
+# D1 데이터베이스
+#
+# 최초 1회 아래 명령으로 DB를 만들고, 출력된 database_id를 여기에 붙여넣으세요.
+#   npx wrangler d1 create ghost-go-db
+#
+# 그 다음 스키마와 시드를 적용합니다.
+#   npm run db:init          (로컬)
+#   npm run db:init:remote   (실제 배포용)
+# ---------------------------------------------------------------------------
+[[d1_databases]]
+binding = "DB"
+database_name = "ghost-go-db"
+database_id = "PLACEHOLDER_DB_ID"   # ← wrangler d1 create 출력값으로 교체
